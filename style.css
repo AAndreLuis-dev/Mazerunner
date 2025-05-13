@@ -1,0 +1,15 @@
+#labirinto {
+  margin-top: 20px;
+}
+
+.celula {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ddd;
+}
+
+.parede { background: black; }
+.vazio { background: white; }
+.inicio { background: green; }
+.fim { background: red; }
+.caminho { background: yellow; }
