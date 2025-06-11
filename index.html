@@ -1,17 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Maze Runner</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <input id="tamanho" placeholder="Altura" type="number" />
-    <input id="largura" placeholder="Largura" type="number" />
-    <button id="botao">Gerar Labirinto</button>
-    <button id="resolver">Resolver</button>
-    <div id="labirinto"></div>
-    <script src="js/maze.js"></script>
-  </body>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Maze Runner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4"
+      style="background-image: url('image_59bdbd.jpg'); background-size: cover; background-position: center;">
+
+  <h1 class="text-5xl font-extrabold text-white text-shadow mb-8 tracking-wider uppercase">Maze Runner</h1>
+
+  <div class="bg-gray-800 bg-opacity-70 p-6 rounded-xl shadow-2xl backdrop-blur-sm max-w-screen-xl w-11/12 mb-8">
+    <div class="controls flex flex-wrap justify-center items-center gap-4 mb-6">
+      <div class="flex flex-col items-center">
+        <label for="largura" class="text-lg font-medium mb-1">Largura:</label>
+        <input type="number" id="largura" min="3" value="21"
+               class="p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 w-24 text-center text-lg shadow-inner"/>
+      </div>
+
+      <div class="flex flex-col items-center">
+        <label for="tamanho" class="text-lg font-medium mb-1">Altura:</label>
+        <input type="number" id="tamanho" min="3" value="21"
+               class="p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 w-24 text-center text-lg shadow-inner"/>
+      </div>
+    </div>
+
+    <div id="labirinto" class="border-2 border-gray-600 rounded-lg overflow-auto shadow-xl mx-auto mb-8"></div>
+
+    <div class="flex flex-wrap justify-center gap-4 mt-6">
+      <button id="botao"
+              class="px-6 py-3 bg-gradient-to-r from-green-700 to-green-900 text-white text-lg font-bold rounded-full shadow-lg hover:from-green-600 hover:to-green-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-70">
+        Gerar Labirinto
+      </button>
+      <button id="resolver"
+              class="px-6 py-3 bg-gradient-to-r from-red-700 to-red-900 text-white text-lg font-bold rounded-full shadow-lg hover:from-red-600 hover:to-red-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-70">
+        Resolver
+      </button>
+      <button id="aumentarVelocidade"
+              class="px-6 py-3 bg-gradient-to-r from-blue-700 to-blue-900 text-white text-lg font-bold rounded-full shadow-lg hover:from-blue-600 hover:to-blue-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-70">
+        Velocidade +
+      </button>
+      <button id="diminuirVelocidade"
+              class="px-6 py-3 bg-gradient-to-r from-purple-700 to-purple-900 text-white text-lg font-bold rounded-full shadow-lg hover:from-purple-600 hover:to-purple-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-70">
+        Velocidade -
+      </button>
+    </div>
+  </div>
+
+  <div id="message-box" class="modal-overlay hidden">
+      <div class="modal-content">
+          <p id="message-text" class="text-gray-800 text-lg"></p>
+          <button id="message-close">OK</button>
+      </div>
+  </div>
+
+  <script src="/js/maze.js"></script>
+</body>
 </html>

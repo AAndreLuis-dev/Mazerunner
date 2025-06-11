@@ -1,13 +1,22 @@
 let labirintoAtual = [];
+let animacaoVelocidade = 100;
+
+function showMessage(message) {
+  const msgBox = document.getElementById('message-box');
+  const msgText = document.getElementById('message-text');
+  msgText.textContent = message;
+  msgBox.classList.remove('hidden');
+}
+
+document.getElementById('message-close').addEventListener('click', () => {
+  document.getElementById('message-box').classList.add('hidden');
+});
 
 function gerarLabirinto(largura, altura) {
   const labirinto = Array.from({ length: altura }, () => Array(largura).fill(1));
 
   const direcoes = [
-    [0, -2],
-    [2, 0],
-    [0, 2],
-    [-2, 0],
+    [0, -2], [2, 0], [0, 2], [-2, 0]
   ];
 
   function embaralhar(array) {
@@ -31,7 +40,7 @@ function gerarLabirinto(largura, altura) {
       const ny = y + dy;
 
       if (dentroDoLimite(nx, ny) && labirinto[nx][ny] === 1) {
-        labirinto[x + Math.floor(dx / 2)][y + Math.floor(dy / 2)] = 0;
+        labirinto[x + dx / 2][y + dy / 2] = 0;
         dfs(nx, ny);
       }
     }
@@ -57,28 +66,40 @@ function gerarLabirinto(largura, altura) {
   return labirinto;
 }
 
-function renderizarLabirinto(labirinto) {
+function renderizarLabirinto(labirinto, atualX = null, atualY = null) {
   const container = document.getElementById('labirinto');
-  if (!container) return;
-
   container.innerHTML = '';
-  container.style.display = 'grid';
-  container.style.gridTemplateColumns = `repeat(${labirinto[0].length}, 20px)`;
 
-  labirinto.forEach((linha) => {
-    linha.forEach((celula) => {
+  const larguraLabirinto = labirinto[0].length;
+  const alturaLabirinto = labirinto.length;
+  const containerWidth = container.offsetWidth;
+  let cellSize = Math.floor(containerWidth / larguraLabirinto) - 1;
+
+  if (cellSize < 5) cellSize = 5;
+  if (cellSize > 30) cellSize = 30;
+
+  container.style.gridTemplateColumns = `repeat(${larguraLabirinto}, ${cellSize}px)`;
+
+  labirinto.forEach((linha, x) => {
+    linha.forEach((celula, y) => {
       const div = document.createElement('div');
       div.classList.add('celula');
+      div.style.width = `${cellSize}px`;
+      div.style.height = `${cellSize}px`;
 
-      if (celula === 1) div.classList.add('parede');
+      if (x === atualX && y === atualY) {
+        div.classList.add('atual');
+      } else if (celula === 1) div.classList.add('parede');
       else if (celula === 0) div.classList.add('vazio');
       else if (celula === 'S') div.classList.add('inicio');
       else if (celula === 'E') div.classList.add('fim');
       else if (celula === '.') div.classList.add('caminho');
+      else if (celula === 'x') div.classList.add('volta');
 
       container.appendChild(div);
     });
   });
+  window.addEventListener('resize', () => renderizarLabirinto(labirintoAtual, atualX, atualY));
 }
 
 async function resolverLabirintoAnimado(lab, x, y, visitado) {
@@ -90,9 +111,9 @@ async function resolverLabirintoAnimado(lab, x, y, visitado) {
   visitado[x][y] = true;
 
   if (valor !== 'S') {
-    lab[x][y] = '.'; 
-    renderizarLabirinto(lab);
-    await new Promise(resolve => setTimeout(resolve, 100));
+    lab[x][y] = '.';
+    renderizarLabirinto(lab, x, y);
+    await new Promise(resolve => setTimeout(resolve, animacaoVelocidade));
   }
 
   const direcoes = [
@@ -109,9 +130,9 @@ async function resolverLabirintoAnimado(lab, x, y, visitado) {
   }
 
   if (valor !== 'S') {
-    lab[x][y] = 0;
-    renderizarLabirinto(lab);
-    await new Promise(resolve => setTimeout(resolve, 100));
+    lab[x][y] = 'x';
+    renderizarLabirinto(lab, x, y);
+    await new Promise(resolve => setTimeout(resolve, animacaoVelocidade));
   }
 
   return false;
@@ -122,7 +143,7 @@ document.querySelector('#botao')?.addEventListener('click', () => {
   const largura = Number(document.querySelector('#largura')?.value);
 
   if (isNaN(altura) || isNaN(largura) || altura < 3 || largura < 3) {
-    alert("Por favor, insira valores válidos (mínimo 3 para ambos)");
+    showMessage("Por favor, insira valores válidos (mínimo 3 para ambos)");
     return;
   }
 
@@ -132,7 +153,7 @@ document.querySelector('#botao')?.addEventListener('click', () => {
 
 document.querySelector('#resolver')?.addEventListener('click', () => {
   if (!labirintoAtual || labirintoAtual.length === 0) {
-    alert("Gere o labirinto primeiro!");
+    showMessage("Gere o labirinto primeiro!");
     return;
   }
 
@@ -143,16 +164,24 @@ document.querySelector('#resolver')?.addEventListener('click', () => {
   const startX = labirintoAtual.findIndex(row => row.includes('S'));
   const startY = labirintoAtual[startX].indexOf('S');
 
- const sucesso = resolverLabirintoAnimado(labirintoAtual, startX, startY, visitado)
-  .then(sucesso => {
-    if (!sucesso) {
-      alert('Caminho não encontrado!');
-    }
-  });
-
-  if (sucesso) {
-    renderizarLabirinto(labirintoAtual);
-  } else {
-    alert('Caminho não encontrado!');
-  }
+  resolverLabirintoAnimado(labirintoAtual, startX, startY, visitado)
+    .then(sucesso => {
+      if (!sucesso) showMessage('Caminho não encontrado!');
+    });
 });
+
+document.querySelector('#aumentarVelocidade')?.addEventListener('click', () => {
+    animacaoVelocidade = Math.max(10, animacaoVelocidade - 20);
+});
+
+document.querySelector('#diminuirVelocidade')?.addEventListener('click', () => {
+    animacaoVelocidade = Math.min(500, animacaoVelocidade + 20);
+});
+
+
+window.onload = () => {
+  const altura = Number(document.querySelector('#tamanho')?.value);
+  const largura = Number(document.querySelector('#largura')?.value);
+  labirintoAtual = gerarLabirinto(largura, altura);
+  renderizarLabirinto(labirintoAtual);
+};
