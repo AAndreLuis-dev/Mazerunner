@@ -5,17 +5,23 @@ body {
 #labirinto {
   display: grid;
   gap: 1px;
+  /* Garante que o labirinto não exceda a largura do contêiner pai */
   max-width: 100%;
+  /* Centraliza o grid, caso seja mais estreito que o contêiner */
+  margin: auto;
 }
 
 .celula {
   box-sizing: border-box;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Removido o border, o gap já cria a separação. Melhora o cálculo de tamanho */
+  /* border: 1px solid rgba(255, 255, 255, 0.2); */
   border-radius: 2px;
+  /* Adiciona uma transição suave para as mudanças de cor */
+  transition: background-color 0.3s ease;
 }
 
 .parede {
-  background-color: #1a1a1a;
+  background-color: #2D3748; /* Tom de cinza escuro, combina com o tema */
 }
 
 .vazio {
@@ -39,7 +45,10 @@ body {
 }
 
 .atual {
-  background-color: #004085;
+  background-color: #3182CE; /* Azul mais vibrante */
+  /* Adiciona um leve brilho para destacar a posição atual */
+  box-shadow: 0 0 8px #3182CE;
+  transform: scale(1.1);
 }
 
 .modal-overlay {
